@@ -38,16 +38,16 @@ dataset_info:
           '5': surprise
   splits:
   - name: train
-    num_bytes: 1741597
+    num_bytes: 1741533
     num_examples: 16000
   - name: validation
-    num_bytes: 214703
+    num_bytes: 214695
     num_examples: 2000
   - name: test
-    num_bytes: 217181
+    num_bytes: 217173
     num_examples: 2000
-  download_size: 740883
-  dataset_size: 2173481
+  download_size: 1287193
+  dataset_size: 2173401
 - config_name: unsplit
   features:
   - name: text
@@ -64,10 +64,24 @@ dataset_info:
           '5': surprise
   splits:
   - name: train
-    num_bytes: 45445685
+    num_bytes: 45444017
     num_examples: 416809
-  download_size: 15388281
-  dataset_size: 45445685
+  download_size: 26888538
+  dataset_size: 45444017
+configs:
+- config_name: split
+  data_files:
+  - split: train
+    path: split/train-*
+  - split: validation
+    path: split/validation-*
+  - split: test
+    path: split/test-*
+  default: true
+- config_name: unsplit
+  data_files:
+  - split: train
+    path: unsplit/train-*
 train-eval-index:
 - config: default
   task: text-classification
