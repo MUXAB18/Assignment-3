@@ -129,9 +129,24 @@ The system uses the [Emotions dataset](https://huggingface.co/datasets/dair-ai/e
 
 ---
 
+## Pre-trained Model
+
+This project uses a **pre-trained Naive Bayes model** that is included directly in the repository — no training step required.
+
+| File | Description |
+|---|---|
+| `data/models/real_data_model.json` | Learned model parameters (class priors, word likelihoods) |
+| `data/models/real_data_model.preprocessor.pkl` | Fitted vocabulary and CountVectorizer |
+
+The model was trained on the [dair-ai/emotion](https://huggingface.co/datasets/dair-ai/emotion) dataset (16,000 samples) using Multinomial Naive Bayes with Laplace smoothing (α=1.0). Both files are committed to this repository so the app runs immediately without any retraining.
+
+> If you want to retrain from scratch, see the [Training the Model](#training-the-model-optional) section below.
+
+---
+
 ## Model Performance
 
-Trained with Multinomial Naive Bayes (Laplace smoothing α=1.0) on 16,000 samples, evaluated on 2,000 test samples:
+Evaluated on 2,000 held-out test samples:
 
 | Metric | Score |
 |---|---|
@@ -201,6 +216,26 @@ export LOG_LEVEL=INFO
 
 ```bash
 pytest tests/ -v
+```
+
+---
+
+## Training the Model (Optional)
+
+The pre-trained model is already included — you only need this if you want to retrain from scratch.
+
+```python
+import sys
+sys.path.insert(0, 'src')
+from data.data_loader import DataLoader
+from ml.emotion_classifier import EmotionClassifier
+
+loader = DataLoader()
+train_df, _, _ = loader.load_split_data()
+
+classifier = EmotionClassifier(alpha=1.0)
+classifier.train(train_df['text'].tolist(), train_df['emotion'].tolist())
+classifier.save_model('data/models/real_data_model')
 ```
 
 ---
