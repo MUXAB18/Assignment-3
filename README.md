@@ -1,292 +1,229 @@
----
-annotations_creators:
-- machine-generated
-language_creators:
-- machine-generated
-language:
-- en
-license:
-- other
-multilinguality:
-- monolingual
-size_categories:
-- 10K<n<100K
-source_datasets:
-- original
-task_categories:
-- text-classification
-task_ids:
-- multi-class-classification
-paperswithcode_id: emotion
-pretty_name: Emotion
-tags:
-- emotion-classification
-dataset_info:
-- config_name: split
-  features:
-  - name: text
-    dtype: string
-  - name: label
-    dtype:
-      class_label:
-        names:
-          '0': sadness
-          '1': joy
-          '2': love
-          '3': anger
-          '4': fear
-          '5': surprise
-  splits:
-  - name: train
-    num_bytes: 1741533
-    num_examples: 16000
-  - name: validation
-    num_bytes: 214695
-    num_examples: 2000
-  - name: test
-    num_bytes: 217173
-    num_examples: 2000
-  download_size: 1287193
-  dataset_size: 2173401
-- config_name: unsplit
-  features:
-  - name: text
-    dtype: string
-  - name: label
-    dtype:
-      class_label:
-        names:
-          '0': sadness
-          '1': joy
-          '2': love
-          '3': anger
-          '4': fear
-          '5': surprise
-  splits:
-  - name: train
-    num_bytes: 45444017
-    num_examples: 416809
-  download_size: 26888538
-  dataset_size: 45444017
-configs:
-- config_name: split
-  data_files:
-  - split: train
-    path: split/train-*
-  - split: validation
-    path: split/validation-*
-  - split: test
-    path: split/test-*
-  default: true
-- config_name: unsplit
-  data_files:
-  - split: train
-    path: unsplit/train-*
-train-eval-index:
-- config: default
-  task: text-classification
-  task_id: multi_class_classification
-  splits:
-    train_split: train
-    eval_split: test
-  col_mapping:
-    text: text
-    label: target
-  metrics:
-  - type: accuracy
-    name: Accuracy
-  - type: f1
-    name: F1 macro
-    args:
-      average: macro
-  - type: f1
-    name: F1 micro
-    args:
-      average: micro
-  - type: f1
-    name: F1 weighted
-    args:
-      average: weighted
-  - type: precision
-    name: Precision macro
-    args:
-      average: macro
-  - type: precision
-    name: Precision micro
-    args:
-      average: micro
-  - type: precision
-    name: Precision weighted
-    args:
-      average: weighted
-  - type: recall
-    name: Recall macro
-    args:
-      average: macro
-  - type: recall
-    name: Recall micro
-    args:
-      average: micro
-  - type: recall
-    name: Recall weighted
-    args:
-      average: weighted
+# Emotion Classification System
+
+[![Python](https://img.shields.io/badge/Python-3.9%2B-blue?logo=python)](https://www.python.org/)
+[![Flask](https://img.shields.io/badge/Flask-3.1-black?logo=flask)](https://flask.palletsprojects.com/)
+[![scikit-learn](https://img.shields.io/badge/scikit--learn-1.8-orange?logo=scikit-learn)](https://scikit-learn.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+
+A text-based emotion classification system built with a **Naive Bayes** algorithm and a **Flask** web interface. Upload or type any text and get instant emotion predictions with confidence scores and detailed model performance metrics.
+
+> **Assignment 3** — [GitHub Repository](https://github.com/musab-18/Assignment-3.git)
+
 ---
 
-# Dataset Card for "emotion"
+## Demo
 
-## Table of Contents
-- [Dataset Description](#dataset-description)
-  - [Dataset Summary](#dataset-summary)
-  - [Supported Tasks and Leaderboards](#supported-tasks-and-leaderboards)
-  - [Languages](#languages)
-- [Dataset Structure](#dataset-structure)
-  - [Data Instances](#data-instances)
-  - [Data Fields](#data-fields)
-  - [Data Splits](#data-splits)
-- [Dataset Creation](#dataset-creation)
-  - [Curation Rationale](#curation-rationale)
-  - [Source Data](#source-data)
-  - [Annotations](#annotations)
-  - [Personal and Sensitive Information](#personal-and-sensitive-information)
-- [Considerations for Using the Data](#considerations-for-using-the-data)
-  - [Social Impact of Dataset](#social-impact-of-dataset)
-  - [Discussion of Biases](#discussion-of-biases)
-  - [Other Known Limitations](#other-known-limitations)
-- [Additional Information](#additional-information)
-  - [Dataset Curators](#dataset-curators)
-  - [Licensing Information](#licensing-information)
-  - [Citation Information](#citation-information)
-  - [Contributions](#contributions)
+| Home Page | Results Page | Metrics Page |
+|---|---|---|
+| Enter any text | See predicted emotion + confidence | View accuracy & per-class metrics |
 
-## Dataset Description
+---
 
-- **Homepage:** [https://github.com/dair-ai/emotion_dataset](https://github.com/dair-ai/emotion_dataset)
-- **Repository:** [More Information Needed](https://github.com/huggingface/datasets/blob/master/CONTRIBUTING.md#how-to-contribute-to-the-dataset-cards)
-- **Paper:** [More Information Needed](https://github.com/huggingface/datasets/blob/master/CONTRIBUTING.md#how-to-contribute-to-the-dataset-cards)
-- **Point of Contact:** [More Information Needed](https://github.com/huggingface/datasets/blob/master/CONTRIBUTING.md#how-to-contribute-to-the-dataset-cards)
-- **Size of downloaded dataset files:** 16.13 MB
-- **Size of the generated dataset:** 47.62 MB
-- **Total amount of disk used:** 63.75 MB
+## Features
 
-### Dataset Summary
+- **Naive Bayes Classifier** — trained on 16,000 labelled samples, achieving **80.45% accuracy**
+- **6 Emotion Classes** — joy, sadness, anger, fear, love, surprise
+- **Confidence Scores** — ranked probabilities for all emotion classes
+- **Flask Web UI** — clean, responsive interface with example texts
+- **Performance Metrics** — accuracy, precision, recall, F1-score per class with visual charts
+- **REST API** — `/api/predict` and `/api/metrics` endpoints
+- **Parquet Dataset Support** — handles both split and unsplit `.parquet` files
 
-Emotion is a dataset of English Twitter messages with six basic emotions: anger, fear, joy, love, sadness, and surprise. For more detailed information please refer to the paper.
+---
 
-### Supported Tasks and Leaderboards
+## Project Structure
 
-[More Information Needed](https://github.com/huggingface/datasets/blob/master/CONTRIBUTING.md#how-to-contribute-to-the-dataset-cards)
-
-### Languages
-
-[More Information Needed](https://github.com/huggingface/datasets/blob/master/CONTRIBUTING.md#how-to-contribute-to-the-dataset-cards)
-
-## Dataset Structure
-
-### Data Instances
-
-An example looks as follows.
 ```
+Assignment-3/
+├── src/
+│   ├── api/
+│   │   └── web_app.py          # Flask application & routes
+│   ├── data/
+│   │   └── data_loader.py      # Parquet dataset loader & validator
+│   ├── ml/
+│   │   ├── emotion_classifier.py  # Naive Bayes classifier
+│   │   ├── text_processor.py      # Text preprocessing & feature extraction
+│   │   ├── model_evaluator.py     # Accuracy, F1, confusion matrix
+│   │   └── prediction_engine.py   # Prediction orchestrator
+│   └── utils/
+│       ├── config.py           # App configuration
+│       └── logging.py          # Logging setup
+├── templates/                  # Jinja2 HTML templates
+│   ├── base.html
+│   ├── index.html
+│   ├── results.html
+│   ├── metrics.html
+│   └── error.html
+├── static/
+│   ├── css/style.css
+│   └── js/app.js
+├── data/
+│   └── models/                 # Trained model artifacts
+├── tests/                      # Unit & integration tests
+├── split/                      # Split parquet datasets (train/val/test)
+├── unsplit/                    # Unsplit parquet dataset
+├── run_app.py                  # App entry point
+└── requirements.txt
+```
+
+---
+
+## Quick Start
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/musab-18/Assignment-3.git
+cd Assignment-3
+```
+
+### 2. Create and activate a virtual environment
+
+```bash
+python -m venv venv
+
+# macOS / Linux
+source venv/bin/activate
+
+# Windows
+venv\Scripts\activate
+```
+
+### 3. Install dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### 4. Run the app
+
+```bash
+python run_app.py
+```
+
+Open your browser at **http://127.0.0.1:5000**
+
+---
+
+## Dataset
+
+The system uses the [Emotions dataset](https://huggingface.co/datasets/dair-ai/emotion) in Parquet format.
+
+| Split | File | Samples |
+|---|---|---|
+| Train | `split/train-00000-of-00001.parquet` | 16,000 |
+| Validation | `split/validation-00000-of-00001.parquet` | 2,000 |
+| Test | `split/test-00000-of-00001.parquet` | 2,000 |
+| Unsplit | `unsplit/train-00000-of-00001.parquet` | 416,000 |
+
+**Schema:** `text` (string), `label` (int 0–5)
+
+| Label | Emotion |
+|---|---|
+| 0 | sadness |
+| 1 | joy |
+| 2 | love |
+| 3 | anger |
+| 4 | fear |
+| 5 | surprise |
+
+---
+
+## Model Performance
+
+Trained with Multinomial Naive Bayes (Laplace smoothing α=1.0) on 16,000 samples, evaluated on 2,000 test samples:
+
+| Metric | Score |
+|---|---|
+| **Overall Accuracy** | **80.45%** |
+
+| Emotion | Precision | Recall | F1-Score |
+|---|---|---|---|
+| anger | 0.887 | 0.716 | 0.793 |
+| fear | 0.824 | 0.670 | 0.739 |
+| joy | 0.785 | 0.950 | 0.859 |
+| love | 0.827 | 0.390 | 0.530 |
+| sadness | 0.794 | 0.921 | 0.853 |
+| surprise | 0.833 | 0.076 | 0.139 |
+
+---
+
+## API Reference
+
+### `POST /api/predict`
+
+Predict emotion from text.
+
+**Request**
+```json
+{ "text": "I am so happy today!" }
+```
+
+**Response**
+```json
 {
-  "text": "im feeling quite sad and sorry for myself but ill snap out of it soon",
-  "label": 0
+  "emotion": "joy",
+  "confidence": 0.923,
+  "all_predictions": {
+    "joy": 0.923,
+    "sadness": 0.031,
+    "anger": 0.021,
+    "fear": 0.014,
+    "love": 0.008,
+    "surprise": 0.003
+  },
+  "processing_time": 0.002,
+  "is_valid": true
 }
 ```
 
-### Data Fields
+### `GET /api/metrics`
 
-The data fields are:
-- `text`: a `string` feature.
-- `label`: a classification label, with possible values including `sadness` (0), `joy` (1), `love` (2), `anger` (3), `fear` (4), `surprise` (5).
+Returns the latest model evaluation metrics as JSON.
 
-### Data Splits
+---
 
-The dataset has 2 configurations:
-- split: with a total of 20_000 examples split into train, validation and split
-- unsplit: with a total of 416_809 examples in a single train split
+## Configuration
 
-| name    |  train | validation | test |
-|---------|-------:|-----------:|-----:|
-| split   |  16000 |       2000 | 2000 |
-| unsplit | 416809 |        n/a |  n/a |
+Customise via environment variables:
 
-## Dataset Creation
-
-### Curation Rationale
-
-[More Information Needed](https://github.com/huggingface/datasets/blob/master/CONTRIBUTING.md#how-to-contribute-to-the-dataset-cards)
-
-### Source Data
-
-#### Initial Data Collection and Normalization
-
-[More Information Needed](https://github.com/huggingface/datasets/blob/master/CONTRIBUTING.md#how-to-contribute-to-the-dataset-cards)
-
-#### Who are the source language producers?
-
-[More Information Needed](https://github.com/huggingface/datasets/blob/master/CONTRIBUTING.md#how-to-contribute-to-the-dataset-cards)
-
-### Annotations
-
-#### Annotation process
-
-[More Information Needed](https://github.com/huggingface/datasets/blob/master/CONTRIBUTING.md#how-to-contribute-to-the-dataset-cards)
-
-#### Who are the annotators?
-
-[More Information Needed](https://github.com/huggingface/datasets/blob/master/CONTRIBUTING.md#how-to-contribute-to-the-dataset-cards)
-
-### Personal and Sensitive Information
-
-[More Information Needed](https://github.com/huggingface/datasets/blob/master/CONTRIBUTING.md#how-to-contribute-to-the-dataset-cards)
-
-## Considerations for Using the Data
-
-### Social Impact of Dataset
-
-[More Information Needed](https://github.com/huggingface/datasets/blob/master/CONTRIBUTING.md#how-to-contribute-to-the-dataset-cards)
-
-### Discussion of Biases
-
-[More Information Needed](https://github.com/huggingface/datasets/blob/master/CONTRIBUTING.md#how-to-contribute-to-the-dataset-cards)
-
-### Other Known Limitations
-
-[More Information Needed](https://github.com/huggingface/datasets/blob/master/CONTRIBUTING.md#how-to-contribute-to-the-dataset-cards)
-
-## Additional Information
-
-### Dataset Curators
-
-[More Information Needed](https://github.com/huggingface/datasets/blob/master/CONTRIBUTING.md#how-to-contribute-to-the-dataset-cards)
-
-### Licensing Information
-
-The dataset should be used for educational and research purposes only.
-
-### Citation Information
-
- If you use this dataset, please cite:
-```
-@inproceedings{saravia-etal-2018-carer,
-    title = "{CARER}: Contextualized Affect Representations for Emotion Recognition",
-    author = "Saravia, Elvis  and
-      Liu, Hsien-Chi Toby  and
-      Huang, Yen-Hao  and
-      Wu, Junlin  and
-      Chen, Yi-Shin",
-    booktitle = "Proceedings of the 2018 Conference on Empirical Methods in Natural Language Processing",
-    month = oct # "-" # nov,
-    year = "2018",
-    address = "Brussels, Belgium",
-    publisher = "Association for Computational Linguistics",
-    url = "https://www.aclweb.org/anthology/D18-1404",
-    doi = "10.18653/v1/D18-1404",
-    pages = "3687--3697",
-    abstract = "Emotions are expressed in nuanced ways, which varies by collective or individual experiences, knowledge, and beliefs. Therefore, to understand emotion, as conveyed through text, a robust mechanism capable of capturing and modeling different linguistic nuances and phenomena is needed. We propose a semi-supervised, graph-based algorithm to produce rich structural descriptors which serve as the building blocks for constructing contextualized affect representations from text. The pattern-based representations are further enriched with word embeddings and evaluated through several emotion recognition tasks. Our experimental results demonstrate that the proposed method outperforms state-of-the-art techniques on emotion recognition tasks.",
-}
+```bash
+export MODEL_ALPHA=1.0            # Laplace smoothing
+export FLASK_HOST=127.0.0.1
+export FLASK_PORT=5000
+export FLASK_DEBUG=false
+export LOG_LEVEL=INFO
 ```
 
-### Contributions
+---
 
-Thanks to [@lhoestq](https://github.com/lhoestq), [@thomwolf](https://github.com/thomwolf), [@lewtun](https://github.com/lewtun) for adding this dataset.
+## Running Tests
+
+```bash
+pytest tests/ -v
+```
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Language | Python 3.9+ |
+| Web Framework | Flask 3.1 |
+| ML Algorithm | Multinomial Naive Bayes (scikit-learn) |
+| Data Processing | pandas, pyarrow |
+| Numerical | numpy, scipy |
+| Frontend | Bootstrap 5, Font Awesome |
+
+---
+
+## License
+
+MIT License — see [LICENSE](LICENSE) for details.
+
+---
+
+## Author
+
+**Musab** — [GitHub](https://github.com/musab-18)

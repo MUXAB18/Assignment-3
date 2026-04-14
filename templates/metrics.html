@@ -1,0 +1,269 @@
+{% extends "base.html" %}
+
+{% block title %}Model Metrics - Emotion Classification System{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <!-- Header -->
+        <div class="text-center mb-5">
+            <h1 class="display-5 text-primary">
+                <i class="fas fa-chart-bar me-2"></i>
+                Model Performance Metrics
+            </h1>
+            <p class="lead text-muted">
+                Detailed analysis of the emotion classification model's accuracy and performance
+            </p>
+        </div>
+
+        {% if error %}
+        <!-- Error Display -->
+        <div class="alert alert-warning" role="alert">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            {{ error }}
+        </div>
+        {% endif %}
+
+        {% if metrics %}
+        <!-- Overall Performance -->
+        {% if metrics.overall_accuracy %}
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-trophy me-2"></i>
+                    Overall Model Performance
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-3">
+                        <div class="metric-box">
+                            <i class="fas fa-bullseye text-success mb-2 d-block fs-2"></i>
+                            <h3 class="text-success">{{ "%.1f"|format(metrics.overall_accuracy * 100) }}%</h3>
+                            <small class="text-muted">Overall Accuracy</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="metric-box">
+                            <i class="fas fa-database text-info mb-2 d-block fs-2"></i>
+                            <h3 class="text-info">{{ metrics.total_samples or 'N/A' }}</h3>
+                            <small class="text-muted">Test Samples</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="metric-box">
+                            <i class="fas fa-layer-group text-warning mb-2 d-block fs-2"></i>
+                            <h3 class="text-warning">
+                                {% if metrics.per_class_metrics %}
+                                    {{ metrics.per_class_metrics | length }}
+                                {% else %}
+                                    N/A
+                                {% endif %}
+                            </h3>
+                            <small class="text-muted">Emotion Classes</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="metric-box">
+                            <i class="fas fa-brain text-primary mb-2 d-block fs-2"></i>
+                            <h3 class="text-primary" style="font-size:1.2rem;">Naive Bayes</h3>
+                            <small class="text-muted">Algorithm</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Per-Class Metrics -->
+        {% if metrics.per_class_metrics %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-list-alt me-2"></i>
+                    Per-Class Performance
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Emotion</th>
+                                <th>Precision</th>
+                                <th>Recall</th>
+                                <th>F1-Score</th>
+                                <th>Performance</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for emotion, scores in metrics.per_class_metrics.items() %}
+                            <tr>
+                                <td>
+                                    {% set emotion_icons = {
+                                        'joy': 'fas fa-smile text-success',
+                                        'happiness': 'fas fa-smile text-success',
+                                        'sadness': 'fas fa-frown text-info',
+                                        'anger': 'fas fa-angry text-danger',
+                                        'fear': 'fas fa-exclamation-triangle text-warning',
+                                        'surprise': 'fas fa-surprise text-primary',
+                                        'disgust': 'fas fa-meh text-secondary',
+                                        'neutral': 'fas fa-meh text-muted',
+                                        'love': 'fas fa-heart text-danger'
+                                    } %}
+                                    {% set icon_class = emotion_icons.get(emotion.lower(), 'fas fa-heart text-primary') %}
+                                    <i class="{{ icon_class }} me-2"></i>
+                                    {{ emotion.title() }}
+                                </td>
+                                <td>
+                                    <span class="badge bg-primary">
+                                        {{ "%.3f"|format(scores.precision) }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-info">
+                                        {{ "%.3f"|format(scores.recall) }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-success">
+                                        {{ "%.3f"|format(scores.f1_score if scores.f1_score is defined else scores.get('f1_score', scores.get('f1', 0))) }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="progress" style="height: 20px;">
+                                        {% set f1_val = scores.f1_score if scores.f1_score is defined else scores.get('f1_score', scores.get('f1', 0)) %}
+                                        {% set f1_percent = (f1_val * 100) | round(1) %}
+                                        {% if f1_percent >= 80 %}
+                                            {% set progress_class = 'bg-success' %}
+                                        {% elif f1_percent >= 60 %}
+                                            {% set progress_class = 'bg-warning' %}
+                                        {% else %}
+                                            {% set progress_class = 'bg-danger' %}
+                                        {% endif %}
+                                        <div class="progress-bar {{ progress_class }}" 
+                                             role="progressbar" 
+                                             style="width: {{ f1_percent }}%">
+                                            {{ f1_percent }}%
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Confusion Matrix -->
+        {% if metrics.confusion_matrix %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-table me-2"></i>
+                    Confusion Matrix
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <div id="confusionMatrix" class="text-center">
+                        <!-- Confusion matrix will be rendered here -->
+                        <p class="text-muted">Confusion matrix visualization will be displayed here when available.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Status Message -->
+        {% if metrics.status %}
+        <div class="alert alert-info" role="alert">
+            <i class="fas fa-info-circle me-2"></i>
+            <strong>Status:</strong> {{ metrics.status }}
+            {% if metrics.message %}
+            <br>{{ metrics.message }}
+            {% endif %}
+        </div>
+        {% endif %}
+
+        {% else %}
+        <!-- No Metrics Available -->
+        <div class="card">
+            <div class="card-body text-center py-5">
+                <i class="fas fa-chart-bar text-muted mb-3" style="font-size: 4rem;"></i>
+                <h4 class="text-muted">No Metrics Available</h4>
+                <p class="text-muted">
+                    Model performance metrics will be displayed here once the model has been evaluated.
+                </p>
+                <a href="{{ url_for('index') }}" class="btn btn-primary">
+                    <i class="fas fa-arrow-left me-1"></i>
+                    Back to Classification
+                </a>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Action Buttons -->
+        <div class="d-grid gap-2 d-md-flex justify-content-md-center mt-4">
+            <a href="{{ url_for('index') }}" class="btn btn-primary">
+                <i class="fas fa-home me-1"></i>
+                Back to Home
+            </a>
+            <button class="btn btn-outline-secondary" onclick="window.print()">
+                <i class="fas fa-print me-1"></i>
+                Print Metrics
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Animate progress bars
+    const progressBars = document.querySelectorAll('.progress-bar');
+    progressBars.forEach(bar => {
+        const width = bar.style.width;
+        bar.style.width = '0%';
+        setTimeout(() => {
+            bar.style.transition = 'width 1.5s ease-in-out';
+            bar.style.width = width;
+        }, 200);
+    });
+    
+    // Add hover effects to metric boxes
+    const metricBoxes = document.querySelectorAll('.metric-box');
+    metricBoxes.forEach(box => {
+        box.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-5px)';
+            this.style.transition = 'transform 0.3s ease';
+        });
+        
+        box.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+});
+</script>
+
+<style>
+.metric-box {
+    padding: 1rem;
+    border-radius: 0.5rem;
+    transition: transform 0.3s ease;
+}
+
+.metric-box:hover {
+    background-color: rgba(0, 123, 255, 0.1);
+}
+
+@media print {
+    .btn, .navbar, footer {
+        display: none !important;
+    }
+}
+</style>
+{% endblock %}

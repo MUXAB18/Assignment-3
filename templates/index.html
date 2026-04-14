@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Emotion Classification System{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <!-- Header -->
+        <div class="text-center mb-5">
+            <h1 class="display-4 text-primary">
+                <i class="fas fa-heart me-3"></i>
+                Emotion Classification
+            </h1>
+            <p class="lead text-muted">
+                Analyze the emotional content of your text using advanced machine learning
+            </p>
+        </div>
+
+        <!-- Error Alert -->
+        {% if error %}
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            {{ error }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endif %}
+
+        <!-- Main Form -->
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-edit me-2"></i>
+                    Enter Text to Analyze
+                </h5>
+            </div>
+            <div class="card-body">
+                <form id="emotionForm" method="POST" action="{{ url_for('predict') }}">
+                    <div class="mb-3">
+                        <label for="text" class="form-label">
+                            Text Input
+                            <span class="text-muted">(up to 5000 characters)</span>
+                        </label>
+                        <textarea 
+                            class="form-control" 
+                            id="text" 
+                            name="text" 
+                            rows="6" 
+                            placeholder="Enter your text here... For example: 'I am feeling great today!' or 'This situation makes me really angry.'"
+                            maxlength="5000"
+                            required>{{ text or '' }}</textarea>
+                        <div class="form-text">
+                            <span id="charCount">0</span> / 5000 characters
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button type="button" class="btn btn-outline-secondary me-md-2" id="clearBtn">
+                            <i class="fas fa-eraser me-1"></i>
+                            Clear
+                        </button>
+                        <button type="submit" class="btn btn-primary" id="analyzeBtn">
+                            <i class="fas fa-search me-1"></i>
+                            <span class="btn-text">Analyze Emotion</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Example Texts -->
+        <div class="mt-4">
+            <h6 class="text-muted mb-3">
+                <i class="fas fa-lightbulb me-1"></i>
+                Try these examples:
+            </h6>
+            <div class="row g-2">
+                <div class="col-md-6">
+                    <button class="btn btn-outline-info btn-sm w-100 example-btn" 
+                            data-text="I am so excited about this new opportunity! It's going to be amazing.">
+                        <i class="fas fa-smile me-1"></i>
+                        Joy Example
+                    </button>
+                </div>
+                <div class="col-md-6">
+                    <button class="btn btn-outline-warning btn-sm w-100 example-btn" 
+                            data-text="I feel really sad and disappointed about what happened today.">
+                        <i class="fas fa-frown me-1"></i>
+                        Sadness Example
+                    </button>
+                </div>
+                <div class="col-md-6">
+                    <button class="btn btn-outline-danger btn-sm w-100 example-btn" 
+                            data-text="This is absolutely infuriating! I can't believe this happened.">
+                        <i class="fas fa-angry me-1"></i>
+                        Anger Example
+                    </button>
+                </div>
+                <div class="col-md-6">
+                    <button class="btn btn-outline-dark btn-sm w-100 example-btn" 
+                            data-text="I'm really worried about what might happen next. This makes me nervous.">
+                        <i class="fas fa-anxious me-1"></i>
+                        Fear Example
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Info Section -->
+        <div class="mt-5">
+            <div class="card bg-light">
+                <div class="card-body">
+                    <h6 class="card-title">
+                        <i class="fas fa-info-circle me-2"></i>
+                        How it works
+                    </h6>
+                    <p class="card-text text-muted mb-0">
+                        Our system uses a Naive Bayes machine learning algorithm to analyze the emotional content 
+                        of your text. The model has been trained on a large dataset of emotional expressions and 
+                        can identify various emotions with confidence scores.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Character counter
+document.getElementById('text').addEventListener('input', function() {
+    const charCount = this.value.length;
+    document.getElementById('charCount').textContent = charCount;
+    
+    // Change color based on character count
+    const counter = document.getElementById('charCount');
+    if (charCount > 4500) {
+        counter.className = 'text-danger fw-bold';
+    } else if (charCount > 4000) {
+        counter.className = 'text-warning fw-bold';
+    } else {
+        counter.className = '';
+    }
+});
+
+// Clear button
+document.getElementById('clearBtn').addEventListener('click', function() {
+    document.getElementById('text').value = '';
+    document.getElementById('charCount').textContent = '0';
+    document.getElementById('charCount').className = '';
+});
+
+// Example buttons
+document.querySelectorAll('.example-btn').forEach(button => {
+    button.addEventListener('click', function() {
+        const exampleText = this.getAttribute('data-text');
+        document.getElementById('text').value = exampleText;
+        document.getElementById('text').dispatchEvent(new Event('input'));
+    });
+});
+
+// Form submission with loading state
+document.getElementById('emotionForm').addEventListener('submit', function() {
+    const btn = document.getElementById('analyzeBtn');
+    const btnText = btn.querySelector('.btn-text');
+    
+    btn.disabled = true;
+    btnText.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Analyzing...';
+});
+
+// Initialize character count on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const textArea = document.getElementById('text');
+    if (textArea.value) {
+        textArea.dispatchEvent(new Event('input'));
+    }
+});
+</script>
+{% endblock %}

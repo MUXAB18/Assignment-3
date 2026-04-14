@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Error {{ error_code }} - Emotion Classification System{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="text-center">
+            <!-- Error Icon -->
+            <div class="mb-4">
+                {% if error_code == 404 %}
+                <i class="fas fa-search text-warning" style="font-size: 5rem;"></i>
+                {% else %}
+                <i class="fas fa-exclamation-triangle text-danger" style="font-size: 5rem;"></i>
+                {% endif %}
+            </div>
+            
+            <!-- Error Code -->
+            <h1 class="display-1 text-muted">{{ error_code }}</h1>
+            
+            <!-- Error Message -->
+            <h3 class="mb-3">
+                {% if error_code == 404 %}
+                Page Not Found
+                {% else %}
+                Oops! Something went wrong
+                {% endif %}
+            </h3>
+            
+            <p class="text-muted mb-4">
+                {{ error_message }}
+            </p>
+            
+            <!-- Action Buttons -->
+            <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                <a href="{{ url_for('index') }}" class="btn btn-primary">
+                    <i class="fas fa-home me-1"></i>
+                    Go Home
+                </a>
+                <button class="btn btn-outline-secondary" onclick="history.back()">
+                    <i class="fas fa-arrow-left me-1"></i>
+                    Go Back
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
